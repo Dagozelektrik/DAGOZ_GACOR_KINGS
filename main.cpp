@@ -89,6 +89,9 @@ int main()
     kicker.period(0.01f);
     kicker = 0; //deactivate kicker, active HIGH
 
+    //compasss
+    theta_prev = compass.readBearing()/10.0;
+
     thread1.start(mainProcess);
     thread2.start(getCompass);
     thread3.start(controlCalculation);
@@ -116,10 +119,10 @@ void setBaseActive(const std_srvs::SetBool::Request& req, std_srvs::SetBool::Res
 void initPIDController()
 {
     assignPIDParam();
-    ControllerFR.init(PIDMode, kpFR, tiFR, tdFR, ffFR, fcFR, cp, true);
-    ControllerFL.init(PIDMode, kpFL, tiFL, tdFL, ffFL, fcFL, cp, true);
-    ControllerBR.init(PIDMode, kpBR, tiBR, tdBR, ffBR, fcBR, cp, true);
-    ControllerBL.init(PIDMode, kpBL, tiBL, tdBL, ffBL, fcBL, cp, true);
+    ControllerFR.init(PIDMode, kpFR, tiFR, tdFR, ffFR, fcFR, cp, true,2);
+    ControllerFL.init(PIDMode, kpFL, tiFL, tdFL, ffFL, fcFL, cp, true,1);
+    ControllerBR.init(PIDMode, kpBR, tiBR, tdBR, ffBR, fcBR, cp, true,3);
+    ControllerBL.init(PIDMode, kpBL, tiBL, tdBL, ffBL, fcBL, cp, true,4);
     last_timer_speed = clock_ms()-0.005;
     last_timer_pub = clock_ms()-0.005;
 }
@@ -325,10 +328,11 @@ void controlCalculation()
         // locomotion_FR_vel = rotInFR * 2 * PI * WHEEL_RADIUS / (WHEEL_PPR_2 * CONTROL_COMPUTE_PERIOD);
         // locomotion_BL_vel = rotInBL * 2 * PI * WHEEL_RADIUS / (WHEEL_PPR_3 * CONTROL_COMPUTE_PERIOD);
         // locomotion_BR_vel = rotInBR * 2 * PI * WHEEL_RADIUS / (WHEEL_PPR_4 * CONTROL_COMPUTE_PERIOD);
+
         // Calculate Feedback Velocity from pulses (using adaptive time)
         t_speed = clock_ms();
         control_period = (t_speed - last_timer_speed)/1000;
-        //control_period = (double) (last_timer_speed - t_speed)/1000;
+        
         last_timer_speed = t_speed;
 
         locomotion_FL_vel = rotInFL * 2 * PI * WHEEL_RADIUS / (WHEEL_PPR_1 * control_period);
@@ -338,10 +342,10 @@ void controlCalculation()
         
 
         // Compute action drom PIDController to determine PWM
-        locomotion_FR_target_rate = ControllerFR.compute_action(locomotion_FR_target_vel, locomotion_FR_vel, ffFR);
-        locomotion_FL_target_rate = ControllerFL.compute_action(locomotion_FL_target_vel, locomotion_FL_vel, ffFL);
-        locomotion_BR_target_rate = ControllerBR.compute_action(locomotion_BR_target_vel, locomotion_BR_vel, ffBR);
-        locomotion_BL_target_rate = ControllerBL.compute_action(locomotion_BL_target_vel, locomotion_BL_vel, ffBL);
+        locomotion_FR_target_rate = ControllerFR.compute_action(locomotion_FR_target_vel, locomotion_FR_vel, ffFR, control_period);
+        locomotion_FL_target_rate = ControllerFL.compute_action(locomotion_FL_target_vel, locomotion_FL_vel, ffFL, control_period);
+        locomotion_BR_target_rate = ControllerBR.compute_action(locomotion_BR_target_vel, locomotion_BR_vel, ffBR, control_period);
+        locomotion_BL_target_rate = ControllerBL.compute_action(locomotion_BL_target_vel, locomotion_BL_vel, ffBL, control_period);
 
         // Execute PWM value to certain pin
         locomotionMotorFL.setpwm(-locomotion_FL_target_rate); //locomotion_FL_target_rate
@@ -349,11 +353,12 @@ void controlCalculation()
         locomotionMotorBR.setpwm(-locomotion_BR_target_rate);    
         locomotionMotorBL.setpwm(-locomotion_BL_target_rate); 
 
-        //NGEPRINT ERROR
-        char pass_param[80];
-        snprintf(pass_param, 80, "Accumulated Error : %f, Period : %lf, Speed: %lf", ControllerFL.errorIntegral, control_period, locomotion_FL_vel);
+        //NGEPRINT ERROR FOR DEBUG
+        //char pass_param[100];
+        //snprintf(pass_param, 80, "Accumulated Error : %f, Period : %lf, Speed: %lf", ControllerBL.errorIntegral, control_period, locomotion_BL_vel);
+        //snprintf(pass_param, 100, "SPEED | FL : %lf, FR : %lf, BR: %lf, BL: %lf", locomotion_FL_vel, locomotion_FR_vel, locomotion_BR_vel, locomotion_BL_vel);
         // snprintf(pass_param, 50, "X_POS : %f, Y_POS : %f", x_pos, y_pos);
-        nh.loginfo(pass_param);   
+        //nh.loginfo(pass_param);   
 
         Thread::wait(5);
     }
@@ -373,12 +378,12 @@ void moveLever()
     switch (kicker_shoot_mode)
     {
     case 0:
-        // position = 0.06; /* Laplace */
-        position = 0.16; /* Kirchhoff */
+        position = 0.06; /* Laplace */
+        //position = 0.16; /* Kirchhoff */
         break;
     case 1:
-        // position = 0.32; /* Laplace */
-        position = 0.38; /* Kirchhoff */
+        position = 0.32; /* Laplace */
+        //position = 0.38; /* Kirchhoff */
         break;
     }
 
@@ -405,11 +410,23 @@ void publishMessage()
     stateMsg.data.dribbler_potentio_l_reading = 0.0;
     stateMsg.data.dribbler_potentio_r_reading = 0.0;
 
-    // Time Stamp
-    stateMsg.data.ir_reading = (t_speed - last_timer_pub);
+    // Time Stamp Masih dalam interger
+    stateMsg.data.delta_timestamp = (int)(t_speed - last_timer_pub);
     last_timer_pub = t_speed;
-    //stateMsg.data.ir_reading = ball_distance;
-    stateMsg.data.compass_reading = theta_result;
+
+    // Accum error
+    stateMsg.data.accum_err = ControllerFR.errorIntegral;
+
+    stateMsg.data.ir_reading = ball_distance;
+
+    theta_com = theta_result - theta_prev;
+    if (theta_com  < -180) {
+        theta_com+=360;
+    } else if(theta_com > 180) {
+        theta_com -= 360;
+    }
+    stateMsg.data.compass_reading = theta_com;
+    theta_prev = theta_result;
 
     stateMsg.header.stamp = nh.now();
 
@@ -560,16 +577,13 @@ void kickTarget(){
 
 //cmps
 void getCompass(){
-   float theta0 = compass.readBearing()/10.0;
+//    float theta0 = compass.readBearing()/10.0;
    Thread::wait(1000);
-   theta0 = compass.readBearing()/10.0;
    int compassLed = 0;
    nh.spinOnce();
-   float theta_prev = theta0;
+//    theta_prev = compass.readBearing()/10.0;
    
-   pc.printf("Theta : %.2f\n", theta0);
-   
-   float theta = 0;
+//    float theta = 0;
    
    while(1){
         nh.spinOnce();
@@ -589,23 +603,26 @@ void getCompass(){
     //        kick_power_target = 0;
     //    }
    
-       float theta_temp = (compass.readBearing()/10.0) - theta0;
+    //    float theta_temp = (compass.readBearing()/10.0) - theta0;
        
-       if(theta_temp > 180.0 && theta_temp <= 360.0)
-           theta_com = (theta_temp - 360.0)/-1.0;    
-       else if(theta_temp < -180.0 && theta_temp >= -360.0)
-           theta_com = (theta_temp + 360.0)/-1.0;
-       else
-           theta_com = theta_temp/-1.0;
+    //    if(theta_temp > 180.0 && theta_temp <= 360.0)
+    //        theta_com = (theta_temp - 360.0)/-1.0;    
+    //    else if(theta_temp < -180.0 && theta_temp >= -360.0)
+    //        theta_com = (theta_temp + 360.0)/-1.0;
+    //    else
+    //        theta_com = theta_temp/-1.0;
        
-       theta_result = theta_com - theta_prev;
-       if (theta_result > 180) theta_result -= 360;
-       else if (theta_result < -180) theta_result += 360;
+    //    theta_result = theta_com - theta_prev;
+    //    if (theta_result > 180) theta_result -= 360;
+    //    else if (theta_result < -180) theta_result += 360;
 
-       theta_prev = theta_com;
+    //    theta_prev = theta_com;
 
-       if(fabs(theta) >= 10.0/RADTODEG) compassLed = 1;
-       else compassLed = 0;
+    //    if(fabs(theta) >= 10.0/RADTODEG) compassLed = 1;
+    //    else compassLed = 0;
+
+        theta_result = compass.readBearing()/10.0;
+    
     //    Thread::wait(20);
     //    kicker.write(0);
     //    kick_power_target = 0;
