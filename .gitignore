@@ -1,0 +1,7 @@
+.clangd
+BUILD
+.mbed
+compile_commands.json
+.cache
+cmps_dagoz
+mbed-os
