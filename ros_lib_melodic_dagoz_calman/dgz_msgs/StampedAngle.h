@@ -1,31 +1,31 @@
-#ifndef _ROS_dgz_msgs_StampedHardwareCommand_h
-#define _ROS_dgz_msgs_StampedHardwareCommand_h
+#ifndef _ROS_dgz_msgs_StampedAngle_h
+#define _ROS_dgz_msgs_StampedAngle_h
 
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
 #include "ros/msg.h"
 #include "std_msgs/Header.h"
-#include "dgz_msgs/HardwareCommand.h"
+#include "dgz_msgs/Angle.h"
 
 namespace dgz_msgs
 {
 
-  class StampedHardwareCommand : public ros::Msg
+  class StampedAngle : public ros::Msg
   {
     public:
       typedef std_msgs::Header _header_type;
       _header_type header;
-      typedef dgz_msgs::HardwareCommand _data_type;
+      typedef dgz_msgs::Angle _data_type;
       _data_type data;
 
-    StampedHardwareCommand():
+    StampedAngle():
       header(),
       data()
     {
     }
 
-    virtual int serialize(unsigned char *outbuffer) const 
+    virtual int serialize(unsigned char *outbuffer) const override
     {
       int offset = 0;
       offset += this->header.serialize(outbuffer + offset);
@@ -33,7 +33,7 @@ namespace dgz_msgs
       return offset;
     }
 
-    virtual int deserialize(unsigned char *inbuffer) 
+    virtual int deserialize(unsigned char *inbuffer) override
     {
       int offset = 0;
       offset += this->header.deserialize(inbuffer + offset);
@@ -41,8 +41,8 @@ namespace dgz_msgs
      return offset;
     }
 
-    virtual const char * getType()  { return "dgz_msgs/StampedHardwareCommand"; };
-    virtual const char * getMD5()  { return "daa26368c306c33b1c7ba9c4274d28a3"; };
+    virtual const char * getType() override { return "dgz_msgs/StampedAngle"; };
+    virtual const char * getMD5() override { return "d73fc4d1044e5cec4418669deb95899b"; };
 
   };
 
