@@ -12,7 +12,7 @@
 #include "Clock.h"
 
 //#include "rtos.h"
-//testos
+
 // For PID Param Logging Purpose (sprintf)
 // #include <string>
 
@@ -378,12 +378,12 @@ void moveLever()
     switch (kicker_shoot_mode)
     {
     case 0:
-        position = 0.06; /* Laplace */
-        //position = 0.16; /* Kirchhoff */
+        //position = 0.06; /* Laplace */
+        position = 0.16; /* Kirchhoff */
         break;
     case 1:
-        position = 0.32; /* Laplace */
-        //position = 0.38; /* Kirchhoff */
+        // position = 0.32; /* Laplace */
+        position = 0.38; /* Kirchhoff */
         break;
     }
 
