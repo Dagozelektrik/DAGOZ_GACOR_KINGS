@@ -44,7 +44,7 @@ namespace dgz_msgs
     {
     }
 
-    virtual int serialize(unsigned char *outbuffer) const
+    virtual int serialize(unsigned char *outbuffer) const 
     {
       int offset = 0;
       union {

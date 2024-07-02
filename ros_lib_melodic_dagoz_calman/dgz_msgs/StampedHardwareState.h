@@ -25,7 +25,7 @@ namespace dgz_msgs
     {
     }
 
-    virtual int serialize(unsigned char *outbuffer) const
+    virtual int serialize(unsigned char *outbuffer) const 
     {
       int offset = 0;
       offset += this->header.serialize(outbuffer + offset);
@@ -33,7 +33,7 @@ namespace dgz_msgs
       return offset;
     }
 
-    virtual int deserialize(unsigned char *inbuffer)
+    virtual int deserialize(unsigned char *inbuffer) 
     {
       int offset = 0;
       offset += this->header.deserialize(inbuffer + offset);
@@ -41,8 +41,8 @@ namespace dgz_msgs
      return offset;
     }
 
-    virtual const char * getType() { return "dgz_msgs/StampedHardwareState"; };
-    virtual const char * getMD5() { return "316b2c383d1a84a278942533cf6afacb"; };
+    virtual const char * getType()  { return "dgz_msgs/StampedHardwareState"; };
+    virtual const char * getMD5()  { return "5ffb67407e47c4209b3c3398030cfb5f"; };
 
   };
 
