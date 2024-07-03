@@ -291,6 +291,7 @@ void mainProcess()
 
 float x_pos = 0;
 float y_pos = 0;
+float ort_degree = 0;
 // PID Calculation to generate PWM
 void controlCalculation()
 {
@@ -426,6 +427,13 @@ void publishMessage()
         theta_com -= 360;
     }
     stateMsg.data.compass_reading = theta_com;
+    ort_degree += theta_com;
+
+    //Print degree
+    // char pass_param[100];
+    // snprintf(pass_param, 50, "Derajat : %f, Compass : %f", ort_degree, theta_result);
+    // nh.loginfo(pass_param);
+
     theta_prev = theta_result;
 
     stateMsg.header.stamp = nh.now();
@@ -477,6 +485,8 @@ void kickTarget(){
         if (clock_ms()-time_last_kick > kicker_ready_time && kick_power_target != 0)
         {
             kicker.write(kick_power_target);
+            wait_us(20000); //Kicker wait time can be more optimized
+            kicker.write(0);
             kick_power_target = 0;
             time_last_kick = clock_ms();
             std_srvs::SetBool::Request req;
@@ -485,12 +495,15 @@ void kickTarget(){
             client.call(req, res);
             // pc.printf("Kicked\n");
         }
-        else {
-            kicker.write(0);
-            kick_power_target = 0;
-        }
-        Thread::wait(20);
-        kicker.write(0);
+        // Debug 13:15, 03/07/2024
+        // else {
+        //     kicker.write(0);
+        //     kick_power_target = 0;
+        // }
+        //Thread::wait(20); 
+        // wait_us(15000);
+        // kicker.write(0);
+        // kick_power_target = 0;
         kick_power_target = 0;
         Thread::wait(30);
     }
@@ -578,7 +591,7 @@ void kickTarget(){
 //cmps
 void getCompass(){
 //    float theta0 = compass.readBearing()/10.0;
-   Thread::wait(1000);
+   //Thread::wait(1000); debug 12:40,02/07/2024
    int compassLed = 0;
    nh.spinOnce();
 //    theta_prev = compass.readBearing()/10.0;
@@ -622,6 +635,10 @@ void getCompass(){
     //    else compassLed = 0;
 
         theta_result = compass.readBearing()/10.0;
+        //Debug print
+        char pass_param[100];
+        snprintf(pass_param, 50, "Derajat : %f", theta_result);
+        nh.loginfo(pass_param);
     
     //    Thread::wait(20);
     //    kicker.write(0);
