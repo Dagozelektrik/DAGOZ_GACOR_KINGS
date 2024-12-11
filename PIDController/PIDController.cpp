@@ -112,7 +112,7 @@ double PIDController::compute_action(double target, double feedback, float ff, f
     targett = target;
     
     errorIntegral = errorIntegral + err * samplingTime;
-    errorDerivative = (prev_err_[0] - err)/samplingTime;
+    errorDerivative = (err - prev_err_[0])/samplingTime;
     
     errorDerivative = clamp(errorDerivative, -5,5);
     errorIntegral = clamp(errorIntegral, -500,500);
@@ -122,7 +122,7 @@ double PIDController::compute_action(double target, double feedback, float ff, f
     if(is_active_)
     {
         // Basic PID
-        out += err * Kp + errorIntegral * Ki + errorDerivative * Kd ;
+        out = (err * Kp) + (errorIntegral * Ki) + (errorDerivative * Kd);
         //CLAMP OUTPUT 
         out = clamp(out, -1., 1.);
     }
@@ -142,7 +142,7 @@ double PIDController::compute_action(double target, double feedback, float ff, f
             //out = 0.0;
             return 0.0;
         }
-        else return clamp(out + ff * sign(target) * feed_forward_abs(target), -1., 1.); //FF TUH FEEDFORWARD, -1 SAMA 1 TUH CLAMPING MIN MAX
+        else return out; //return clamp(out + ff * sign(target) * feed_forward_abs(target), -1., 1.); //FF TUH FEEDFORWARD, -1 SAMA 1 TUH CLAMPING MIN MAX
         }
     else { 
         return 0.0;
