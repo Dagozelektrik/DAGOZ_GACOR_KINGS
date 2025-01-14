@@ -291,6 +291,11 @@ void mainProcess()
 
 float x_pos = 0;
 float y_pos = 0;
+int FL_acc = 0;
+int FR_acc = 0;
+int BL_acc = 0;
+int BR_acc = 0;
+
 // PID Calculation to generate PWM
 void controlCalculation()
 {
@@ -313,8 +318,17 @@ void controlCalculation()
         motorPulseFL += rotInFL;
         motorPulseFR += rotInFR;
         motorPulseBL += rotInBL;
-        motorPulseBR += rotInBR; 
-        
+        motorPulseBR += rotInBR;
+
+        // FL_acc += rotInFL;
+        // FR_acc += rotInFR;
+        // BL_acc += rotInBL;
+        // BR_acc += rotInBR;
+
+        // char pass_param[80];
+        // snprintf(pass_param, 80, "FL : %d \n,FR : %d \n,BL : %d \n,BR : %d", FL_acc, FR_acc, BL_acc, BR_acc);
+        // nh.loginfo(pass_param);
+
         x_pos += (((-rotInFL * 2 * PI * WHEEL_RADIUS )/ WHEEL_PPR_1) + ((rotInFR * 2 * PI * WHEEL_RADIUS )/ WHEEL_PPR_2) - ((rotInBL * 2 * PI * WHEEL_RADIUS) / WHEEL_PPR_3) +  ((rotInBR * 2 * PI * WHEEL_RADIUS) / WHEEL_PPR_4))*0.353553391;
         y_pos +=  (((rotInFL * 2 * PI * WHEEL_RADIUS) / WHEEL_PPR_1) + ((rotInFR * 2 * PI * WHEEL_RADIUS )/ WHEEL_PPR_2) - ((rotInBL * 2 * PI * WHEEL_RADIUS) / WHEEL_PPR_3) -  ((rotInBR * 2 * PI * WHEEL_RADIUS )/ WHEEL_PPR_4))*0.353553391;
         cur_locomotion_L -= temp_cur_locomotion_L;

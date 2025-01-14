@@ -37,10 +37,10 @@ private:
     float Xt, Xt_update, Xt_prev, Pt, Pt_update, Pt_prev, Kt, R, Q;
     
     //IIR LPF
-    float b[3]; //Numerator Coefficent
-    float a[3]; //Denumeratro Coefficient
-    float x[3]; // Input history
-    float y[3]; // Output history
+    //float b[3]; //Numerator Coefficent
+    //float a[3]; //Denumeratro Coefficient
+    //float x[3]; // Input history
+    //float y[3]; // Output history
 
 };
 

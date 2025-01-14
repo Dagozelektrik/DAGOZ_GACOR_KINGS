@@ -14,13 +14,13 @@ PIDController::PIDController()
     I = 0.;
     PD_IIR = 0.;
     // Input history
-    x[0] = 0.; 
-    x[1] = 0.; 
-    x[2] = 0.; 
+    // x[0] = 0.; 
+    // x[1] = 0.; 
+    // x[2] = 0.; 
     // Output history
-    y[0] = 0.; 
-    y[1] = 0.;
-    y[2] = 0.;
+    // y[0] = 0.; 
+    // y[1] = 0.;
+    // y[2] = 0.;
 }
 
 //FC= filter coeff, cp tuh 
@@ -32,7 +32,7 @@ void PIDController::init(int mode, float kp, float ti, float td, float ff, float
     Kp = kp;
     Kd = td;
     Ki = ti;
-    errorIntegral =0; 
+    errorIntegral = 0; 
     errorDerivative  = 0;
     err = 0;
     out = 0;
@@ -54,13 +54,13 @@ void PIDController::init(int mode, float kp, float ti, float td, float ff, float
     Pt_prev = 1;
 
     //LPF IIR
-    x[0] = 0.; 
-    x[1] = 0.; 
-    x[2] = 0.;  // Input history
+    // x[0] = 0.; 
+    // x[1] = 0.; 
+    // x[2] = 0.;  // Input history
 
-    y[0] = 0.; 
-    y[1] = 0.; 
-    y[2] = 0.;  // Output history
+    // y[0] = 0.; 
+    // y[1] = 0.; 
+    // y[2] = 0.;  // Output history
 
     //INI PI 
     if (mode == 1) {
@@ -131,35 +131,39 @@ double PIDController::compute_action(double target, double feedback, float ff, f
     //err = (prev_ril_err[1] + prev_ril_err[0] + ril_err) / 3;
 
     // Shift input history
-    x[2] = x[1];
-    x[1] = x[0];
+    // x[2] = x[1];
+    // x[1] = x[0];
     
     // Shift output history
-    y[2] = y[1];
-    y[1] = y[0];
+    // y[2] = y[1];
+    // y[1] = y[0];
+
 
 
     err = ril_err;
-    targett = target;
+    //targett = target;
     
     errorIntegral = errorIntegral + err * samplingTime;
     errorDerivative = (err - prev_err_[0])/samplingTime;
     
     //errorDerivative = clamp(errorDerivative, -5,5);
     //errorIntegral = clamp(errorIntegral, -500,500);
+
     PD = err * Kp + errorDerivative *Kd;
-    x[0] = PD;
     I = errorIntegral * Ki;
+    //x[0] = PD;
 
     //Filter
-    PD_IIR = b[0] * x[0] + b[1] * x[1] + b[2] * x[2] - a[1] * y[1] - a[2] * y[2];
-    y[0] = PD_IIR;
+    //PD_IIR = (0.85  *PD) + ((1 - 0.85) * PD_IIR); //Set the smoothness
+    //PD_IIR = (b[0] * x[0]) + (b[1] * x[1]) + (b[2] * x[2]) - (a[1] * y[1]) - (a[2] * y[2]);
+    //y[0] = PD_IIR;
 
     //NGITUNG KELUARAN, TAPI PAKE KONTINIU
     if(is_active_)
     {
         // Basic PID
-        out = PD_IIR + I;
+        //out = PD_IIR + I;
+        out = PD + I;
         //CLAMP OUTPUT 
         out = clamp(out, -1., 1.);
     }
