@@ -491,6 +491,8 @@ void kickTarget(){
         if (clock_ms()-time_last_kick > kicker_ready_time && kick_power_target != 0)
         {
             kicker.write(kick_power_target);
+            wait_us(20000); //Kicker wait time can be more optimized
+            kicker.write(0);
             kick_power_target = 0;
             time_last_kick = clock_ms();
             std_srvs::SetBool::Request req;
@@ -499,12 +501,15 @@ void kickTarget(){
             client.call(req, res);
             // pc.printf("Kicked\n");
         }
-        else {
-            kicker.write(0);
-            kick_power_target = 0;
-        }
-        Thread::wait(20);
-        kicker.write(0);
+        // Debug 13:15, 03/07/2024
+        // else {
+        //     kicker.write(0);
+        //     kick_power_target = 0;
+        // }
+        //Thread::wait(20); 
+        // wait_us(15000);
+        // kicker.write(0);
+        // kick_power_target = 0;
         kick_power_target = 0;
         Thread::wait(30);
     }
