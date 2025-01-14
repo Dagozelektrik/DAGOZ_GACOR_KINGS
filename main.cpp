@@ -442,6 +442,11 @@ void publishMessage()
     stateMsg.data.compass_reading = theta_com;
     theta_prev = theta_result;
 
+    stateMsg.data.base_motor_1_vel = locomotion_FL_vel;
+    stateMsg.data.base_motor_2_vel = locomotion_FR_vel;
+    stateMsg.data.base_motor_3_vel = locomotion_BL_vel;
+    stateMsg.data.base_motor_4_vel = locomotion_BR_vel;
+
     stateMsg.header.stamp = nh.now();
 
     statePub.publish(&stateMsg);

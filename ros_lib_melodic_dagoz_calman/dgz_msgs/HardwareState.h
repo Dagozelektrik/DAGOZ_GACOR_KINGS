@@ -42,6 +42,14 @@ namespace dgz_msgs
       _delta_timestamp_type delta_timestamp;
       typedef double _accum_err_type;
       _accum_err_type accum_err;
+      typedef double _base_motor_1_vel_type;
+      _base_motor_1_vel_type base_motor_1_vel;
+      typedef double _base_motor_2_vel_type;
+      _base_motor_2_vel_type base_motor_2_vel;
+      typedef double _base_motor_3_vel_type;
+      _base_motor_3_vel_type base_motor_3_vel;
+      typedef double _base_motor_4_vel_type;
+      _base_motor_4_vel_type base_motor_4_vel;
 
     HardwareState():
       base_motor_1_pulse_delta(0),
@@ -58,7 +66,11 @@ namespace dgz_msgs
       compass_reading(0),
       ir_reading(0),
       delta_timestamp(0),
-      accum_err(0)
+      accum_err(0),
+      base_motor_1_vel(0),
+      base_motor_2_vel(0),
+      base_motor_3_vel(0),
+      base_motor_4_vel(0)
     {
     }
 
@@ -232,6 +244,62 @@ namespace dgz_msgs
       *(outbuffer + offset + 6) = (u_accum_err.base >> (8 * 6)) & 0xFF;
       *(outbuffer + offset + 7) = (u_accum_err.base >> (8 * 7)) & 0xFF;
       offset += sizeof(this->accum_err);
+      union {
+        double real;
+        uint64_t base;
+      } u_base_motor_1_vel;
+      u_base_motor_1_vel.real = this->base_motor_1_vel;
+      *(outbuffer + offset + 0) = (u_base_motor_1_vel.base >> (8 * 0)) & 0xFF;
+      *(outbuffer + offset + 1) = (u_base_motor_1_vel.base >> (8 * 1)) & 0xFF;
+      *(outbuffer + offset + 2) = (u_base_motor_1_vel.base >> (8 * 2)) & 0xFF;
+      *(outbuffer + offset + 3) = (u_base_motor_1_vel.base >> (8 * 3)) & 0xFF;
+      *(outbuffer + offset + 4) = (u_base_motor_1_vel.base >> (8 * 4)) & 0xFF;
+      *(outbuffer + offset + 5) = (u_base_motor_1_vel.base >> (8 * 5)) & 0xFF;
+      *(outbuffer + offset + 6) = (u_base_motor_1_vel.base >> (8 * 6)) & 0xFF;
+      *(outbuffer + offset + 7) = (u_base_motor_1_vel.base >> (8 * 7)) & 0xFF;
+      offset += sizeof(this->base_motor_1_vel);
+      union {
+        double real;
+        uint64_t base;
+      } u_base_motor_2_vel;
+      u_base_motor_2_vel.real = this->base_motor_2_vel;
+      *(outbuffer + offset + 0) = (u_base_motor_2_vel.base >> (8 * 0)) & 0xFF;
+      *(outbuffer + offset + 1) = (u_base_motor_2_vel.base >> (8 * 1)) & 0xFF;
+      *(outbuffer + offset + 2) = (u_base_motor_2_vel.base >> (8 * 2)) & 0xFF;
+      *(outbuffer + offset + 3) = (u_base_motor_2_vel.base >> (8 * 3)) & 0xFF;
+      *(outbuffer + offset + 4) = (u_base_motor_2_vel.base >> (8 * 4)) & 0xFF;
+      *(outbuffer + offset + 5) = (u_base_motor_2_vel.base >> (8 * 5)) & 0xFF;
+      *(outbuffer + offset + 6) = (u_base_motor_2_vel.base >> (8 * 6)) & 0xFF;
+      *(outbuffer + offset + 7) = (u_base_motor_2_vel.base >> (8 * 7)) & 0xFF;
+      offset += sizeof(this->base_motor_2_vel);
+      union {
+        double real;
+        uint64_t base;
+      } u_base_motor_3_vel;
+      u_base_motor_3_vel.real = this->base_motor_3_vel;
+      *(outbuffer + offset + 0) = (u_base_motor_3_vel.base >> (8 * 0)) & 0xFF;
+      *(outbuffer + offset + 1) = (u_base_motor_3_vel.base >> (8 * 1)) & 0xFF;
+      *(outbuffer + offset + 2) = (u_base_motor_3_vel.base >> (8 * 2)) & 0xFF;
+      *(outbuffer + offset + 3) = (u_base_motor_3_vel.base >> (8 * 3)) & 0xFF;
+      *(outbuffer + offset + 4) = (u_base_motor_3_vel.base >> (8 * 4)) & 0xFF;
+      *(outbuffer + offset + 5) = (u_base_motor_3_vel.base >> (8 * 5)) & 0xFF;
+      *(outbuffer + offset + 6) = (u_base_motor_3_vel.base >> (8 * 6)) & 0xFF;
+      *(outbuffer + offset + 7) = (u_base_motor_3_vel.base >> (8 * 7)) & 0xFF;
+      offset += sizeof(this->base_motor_3_vel);
+      union {
+        double real;
+        uint64_t base;
+      } u_base_motor_4_vel;
+      u_base_motor_4_vel.real = this->base_motor_4_vel;
+      *(outbuffer + offset + 0) = (u_base_motor_4_vel.base >> (8 * 0)) & 0xFF;
+      *(outbuffer + offset + 1) = (u_base_motor_4_vel.base >> (8 * 1)) & 0xFF;
+      *(outbuffer + offset + 2) = (u_base_motor_4_vel.base >> (8 * 2)) & 0xFF;
+      *(outbuffer + offset + 3) = (u_base_motor_4_vel.base >> (8 * 3)) & 0xFF;
+      *(outbuffer + offset + 4) = (u_base_motor_4_vel.base >> (8 * 4)) & 0xFF;
+      *(outbuffer + offset + 5) = (u_base_motor_4_vel.base >> (8 * 5)) & 0xFF;
+      *(outbuffer + offset + 6) = (u_base_motor_4_vel.base >> (8 * 6)) & 0xFF;
+      *(outbuffer + offset + 7) = (u_base_motor_4_vel.base >> (8 * 7)) & 0xFF;
+      offset += sizeof(this->base_motor_4_vel);
       return offset;
     }
 
@@ -420,11 +488,71 @@ namespace dgz_msgs
       u_accum_err.base |= ((uint64_t) (*(inbuffer + offset + 7))) << (8 * 7);
       this->accum_err = u_accum_err.real;
       offset += sizeof(this->accum_err);
+      union {
+        double real;
+        uint64_t base;
+      } u_base_motor_1_vel;
+      u_base_motor_1_vel.base = 0;
+      u_base_motor_1_vel.base |= ((uint64_t) (*(inbuffer + offset + 0))) << (8 * 0);
+      u_base_motor_1_vel.base |= ((uint64_t) (*(inbuffer + offset + 1))) << (8 * 1);
+      u_base_motor_1_vel.base |= ((uint64_t) (*(inbuffer + offset + 2))) << (8 * 2);
+      u_base_motor_1_vel.base |= ((uint64_t) (*(inbuffer + offset + 3))) << (8 * 3);
+      u_base_motor_1_vel.base |= ((uint64_t) (*(inbuffer + offset + 4))) << (8 * 4);
+      u_base_motor_1_vel.base |= ((uint64_t) (*(inbuffer + offset + 5))) << (8 * 5);
+      u_base_motor_1_vel.base |= ((uint64_t) (*(inbuffer + offset + 6))) << (8 * 6);
+      u_base_motor_1_vel.base |= ((uint64_t) (*(inbuffer + offset + 7))) << (8 * 7);
+      this->base_motor_1_vel = u_base_motor_1_vel.real;
+      offset += sizeof(this->base_motor_1_vel);
+      union {
+        double real;
+        uint64_t base;
+      } u_base_motor_2_vel;
+      u_base_motor_2_vel.base = 0;
+      u_base_motor_2_vel.base |= ((uint64_t) (*(inbuffer + offset + 0))) << (8 * 0);
+      u_base_motor_2_vel.base |= ((uint64_t) (*(inbuffer + offset + 1))) << (8 * 1);
+      u_base_motor_2_vel.base |= ((uint64_t) (*(inbuffer + offset + 2))) << (8 * 2);
+      u_base_motor_2_vel.base |= ((uint64_t) (*(inbuffer + offset + 3))) << (8 * 3);
+      u_base_motor_2_vel.base |= ((uint64_t) (*(inbuffer + offset + 4))) << (8 * 4);
+      u_base_motor_2_vel.base |= ((uint64_t) (*(inbuffer + offset + 5))) << (8 * 5);
+      u_base_motor_2_vel.base |= ((uint64_t) (*(inbuffer + offset + 6))) << (8 * 6);
+      u_base_motor_2_vel.base |= ((uint64_t) (*(inbuffer + offset + 7))) << (8 * 7);
+      this->base_motor_2_vel = u_base_motor_2_vel.real;
+      offset += sizeof(this->base_motor_2_vel);
+      union {
+        double real;
+        uint64_t base;
+      } u_base_motor_3_vel;
+      u_base_motor_3_vel.base = 0;
+      u_base_motor_3_vel.base |= ((uint64_t) (*(inbuffer + offset + 0))) << (8 * 0);
+      u_base_motor_3_vel.base |= ((uint64_t) (*(inbuffer + offset + 1))) << (8 * 1);
+      u_base_motor_3_vel.base |= ((uint64_t) (*(inbuffer + offset + 2))) << (8 * 2);
+      u_base_motor_3_vel.base |= ((uint64_t) (*(inbuffer + offset + 3))) << (8 * 3);
+      u_base_motor_3_vel.base |= ((uint64_t) (*(inbuffer + offset + 4))) << (8 * 4);
+      u_base_motor_3_vel.base |= ((uint64_t) (*(inbuffer + offset + 5))) << (8 * 5);
+      u_base_motor_3_vel.base |= ((uint64_t) (*(inbuffer + offset + 6))) << (8 * 6);
+      u_base_motor_3_vel.base |= ((uint64_t) (*(inbuffer + offset + 7))) << (8 * 7);
+      this->base_motor_3_vel = u_base_motor_3_vel.real;
+      offset += sizeof(this->base_motor_3_vel);
+      union {
+        double real;
+        uint64_t base;
+      } u_base_motor_4_vel;
+      u_base_motor_4_vel.base = 0;
+      u_base_motor_4_vel.base |= ((uint64_t) (*(inbuffer + offset + 0))) << (8 * 0);
+      u_base_motor_4_vel.base |= ((uint64_t) (*(inbuffer + offset + 1))) << (8 * 1);
+      u_base_motor_4_vel.base |= ((uint64_t) (*(inbuffer + offset + 2))) << (8 * 2);
+      u_base_motor_4_vel.base |= ((uint64_t) (*(inbuffer + offset + 3))) << (8 * 3);
+      u_base_motor_4_vel.base |= ((uint64_t) (*(inbuffer + offset + 4))) << (8 * 4);
+      u_base_motor_4_vel.base |= ((uint64_t) (*(inbuffer + offset + 5))) << (8 * 5);
+      u_base_motor_4_vel.base |= ((uint64_t) (*(inbuffer + offset + 6))) << (8 * 6);
+      u_base_motor_4_vel.base |= ((uint64_t) (*(inbuffer + offset + 7))) << (8 * 7);
+      this->base_motor_4_vel = u_base_motor_4_vel.real;
+      offset += sizeof(this->base_motor_4_vel);
      return offset;
     }
 
     virtual const char * getType()  { return "dgz_msgs/HardwareState"; };
-    virtual const char * getMD5()  { return "c45041d3816d139d8d48dc7e8845ac70"; };
+    virtual const char * getMD5()  { return "7b048cc2e6cc89caeec61ec00af48f01"; };
 
   };
 

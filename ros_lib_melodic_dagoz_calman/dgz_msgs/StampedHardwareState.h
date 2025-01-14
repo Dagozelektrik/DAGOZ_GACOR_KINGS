@@ -42,7 +42,7 @@ namespace dgz_msgs
     }
 
     virtual const char * getType()  { return "dgz_msgs/StampedHardwareState"; };
-    virtual const char * getMD5()  { return "5ffb67407e47c4209b3c3398030cfb5f"; };
+    virtual const char * getMD5()  { return "e8043b3bdf2aeb6d5074ab440c9db134"; };
 
   };
 
