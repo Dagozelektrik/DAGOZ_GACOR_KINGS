@@ -1,3 +1,4 @@
+#include "PIDController/PIDController.h"
 #include "mbed.h"
 #include "math.h"
 #include <vector>
@@ -47,6 +48,8 @@ PIDController ControllerFR = PIDController();
 PIDController ControllerFL = PIDController();
 PIDController ControllerBR = PIDController();
 PIDController ControllerBL = PIDController();
+PIDController ControllerRD = PIDController();
+PIDController ControllerLD = PIDController();
 
 //primitive function
 void mainProcess();
