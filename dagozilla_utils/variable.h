@@ -87,6 +87,11 @@ double locomotion_FR_vel = 0;
 double locomotion_BL_vel = 0;
 double locomotion_BR_vel = 0;
 
+double locomotion_FL_prev_vel = 0;
+double locomotion_FR_prev_vel = 0;
+double locomotion_BL_prev_vel = 0;
+double locomotion_BR_prev_vel = 0;
+
 //extended variable
 unsigned long last_timer;
 double last_timer_speed,t_speed;

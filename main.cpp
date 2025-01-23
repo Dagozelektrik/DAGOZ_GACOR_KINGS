@@ -59,6 +59,7 @@ void moveDribbler();
 void initPIDController();
 void assignPIDParam();
 void setBaseActive(const std_srvs::SetBool::Request& req, std_srvs::SetBool::Response& res);
+double filter(double vel, double prev_vel);
 
 // 
 ros::ServiceServer<std_srvs::SetBool::Request, std_srvs::SetBool::Response> set_base_active_srv("/nucleo/command/set_base_active", &setBaseActive);
@@ -353,7 +354,11 @@ void controlCalculation()
         locomotion_FR_vel = rotInFR * 2 * PI * WHEEL_RADIUS / (WHEEL_PPR_2 * control_period);
         locomotion_BL_vel = rotInBL * 2 * PI * WHEEL_RADIUS / (WHEEL_PPR_3 * control_period);
         locomotion_BR_vel = rotInBR * 2 * PI * WHEEL_RADIUS / (WHEEL_PPR_4 * control_period);
-        
+
+        locomotion_FL_vel = filter(locomotion_FL_vel, locomotion_FL_prev_vel);
+        locomotion_FR_vel = filter(locomotion_FR_vel, locomotion_FR_prev_vel);
+        locomotion_BL_vel = filter(locomotion_BL_vel, locomotion_BL_prev_vel);
+        locomotion_BR_vel = filter(locomotion_BR_vel, locomotion_BR_prev_vel);
 
         // Compute action drom PIDController to determine PWM
         locomotion_FR_target_rate = ControllerFR.compute_action(locomotion_FR_target_vel, locomotion_FR_vel, ffFR, control_period);
@@ -366,6 +371,11 @@ void controlCalculation()
         locomotionMotorFR.setpwm(-locomotion_FR_target_rate);
         locomotionMotorBR.setpwm(-locomotion_BR_target_rate);    
         locomotionMotorBL.setpwm(-locomotion_BL_target_rate); 
+
+        locomotion_FL_prev_vel = locomotion_FL_vel;
+        locomotion_FR_prev_vel = locomotion_FR_vel;
+        locomotion_BL_prev_vel = locomotion_BL_vel;
+        locomotion_BR_prev_vel = locomotion_BR_vel;
 
         //NGEPRINT ERROR FOR DEBUG
         //char pass_param[100];
@@ -652,4 +662,10 @@ void getCompass(){
     //    kick_power_target = 0;
        Thread::wait(30);
    }
+}
+
+double filter(double vel, double prev_vel){
+    double filtered_vel;
+    filtered_vel = 0.55*vel + 0.45*prev_vel;
+    return filtered_vel;
 }
