@@ -60,6 +60,7 @@ void initPIDController();
 void assignPIDParam();
 void setBaseActive(const std_srvs::SetBool::Request& req, std_srvs::SetBool::Response& res);
 double filter(double vel, double prev_vel);
+double zeroing(double val);
 
 // 
 ros::ServiceServer<std_srvs::SetBool::Request, std_srvs::SetBool::Response> set_base_active_srv("/nucleo/command/set_base_active", &setBaseActive);
@@ -81,8 +82,6 @@ int main()
     nh.serviceClient(client);
     initPIDController();
 
-    t.start();
-
     //kicker mode
     kickerServo.calibrate(range, 0.0);
     kickerServo = position;
@@ -97,6 +96,10 @@ int main()
     thread2.start(getCompass);
     thread3.start(controlCalculation);
     thread4.start(kickTarget);
+
+    char pass_param[80];
+    snprintf(pass_param, 80, "Thread Succeed");
+    nh.loginfo(pass_param);
 
     while (true)
     {
@@ -270,7 +273,7 @@ void mainProcess()
 
         publishMessage();
 
-        if (t - last_timer >= 1000)
+        if (clock_ms() - last_timer_sub >= 300)
         {
 
             locomotion_FL_target_vel = 0;
@@ -296,6 +299,16 @@ int FL_acc = 0;
 int FR_acc = 0;
 int BL_acc = 0;
 int BR_acc = 0;
+
+// Normalize Zero
+double zeroing(double val){
+    if (fabs(val) < 0.0001) {
+        return 0;
+    }
+    else{
+        return val;     //changed, previous function exist without else but with return val included.    
+    }
+}
 
 // PID Calculation to generate PWM
 void controlCalculation()
@@ -355,16 +368,22 @@ void controlCalculation()
         locomotion_BL_vel = rotInBL * 2 * PI * WHEEL_RADIUS / (WHEEL_PPR_3 * control_period);
         locomotion_BR_vel = rotInBR * 2 * PI * WHEEL_RADIUS / (WHEEL_PPR_4 * control_period);
 
-        locomotion_FL_vel = filter(locomotion_FL_vel, locomotion_FL_prev_vel);
-        locomotion_FR_vel = filter(locomotion_FR_vel, locomotion_FR_prev_vel);
-        locomotion_BL_vel = filter(locomotion_BL_vel, locomotion_BL_prev_vel);
-        locomotion_BR_vel = filter(locomotion_BR_vel, locomotion_BR_prev_vel);
+        locomotion_FL_vel = zeroing(filter(locomotion_FL_vel, locomotion_FL_prev_vel));
+        locomotion_FR_vel = zeroing(filter(locomotion_FR_vel, locomotion_FR_prev_vel));
+        locomotion_BL_vel = zeroing(filter(locomotion_BL_vel, locomotion_BL_prev_vel));
+        locomotion_BR_vel = zeroing(filter(locomotion_BR_vel, locomotion_BR_prev_vel));
+
+        
 
         // Compute action drom PIDController to determine PWM
         locomotion_FR_target_rate = ControllerFR.compute_action(locomotion_FR_target_vel, locomotion_FR_vel, ffFR, control_period);
         locomotion_FL_target_rate = ControllerFL.compute_action(locomotion_FL_target_vel, locomotion_FL_vel, ffFL, control_period);
         locomotion_BR_target_rate = ControllerBR.compute_action(locomotion_BR_target_vel, locomotion_BR_vel, ffBR, control_period);
         locomotion_BL_target_rate = ControllerBL.compute_action(locomotion_BL_target_vel, locomotion_BL_vel, ffBL, control_period);
+
+        char pass_param[100];
+        snprintf(pass_param, 100, "h_disturb : %lf, z1 : %lf, z2: %lf, y_obs : %lf", ControllerBL.h_disturb, ControllerBL.z1, ControllerBL.z2, ControllerBL.obs_y);
+        nh.loginfo(pass_param);
 
         // Execute PWM value to certain pin
         locomotionMotorFL.setpwm(-locomotion_FL_target_rate); //locomotion_FL_target_rate
@@ -452,10 +471,10 @@ void publishMessage()
     stateMsg.data.compass_reading = theta_com;
     theta_prev = theta_result;
 
-    stateMsg.data.base_motor_1_vel = locomotion_FL_vel;
-    stateMsg.data.base_motor_2_vel = locomotion_FR_vel;
-    stateMsg.data.base_motor_3_vel = locomotion_BL_vel;
-    stateMsg.data.base_motor_4_vel = locomotion_BR_vel;
+    stateMsg.data.base_motor_1_vel = locomotion_FL_vel; //zeroing(locomotion_FL_vel);
+    stateMsg.data.base_motor_2_vel = locomotion_FR_vel;//zeroing(locomotion_FR_vel);
+    stateMsg.data.base_motor_3_vel = locomotion_BL_vel;//zeroing(locomotion_BL_vel);
+    stateMsg.data.base_motor_4_vel = locomotion_BR_vel;//zeroing(locomotion_BR_vel);
 
     stateMsg.header.stamp = nh.now();
 
@@ -495,7 +514,8 @@ void commandCallback(const dgz_msgs::StampedHardwareCommand &commandMsg)
     ControllerBL.setActive(base_active);
     ControllerBR.setActive(base_active);
 
-    last_timer = t;
+    last_timer_sub = clock_ms();
+
 }
 
 //new function

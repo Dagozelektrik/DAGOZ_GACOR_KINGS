@@ -85,6 +85,19 @@ void PIDController::init(int mode, float kp, float ti, float td, float ff, float
         prev_out_[0] = 0.;
         prev_out_[1] = 0.;
         is_active_ = is_active;
+
+        z1 = 0;
+        z2 = 0;
+        z3 = 0;
+        obs_y = 0;
+        y = 0;
+        h_disturb = 0;
+
+        float wo = 0.1;
+        l1 = 3*wo;
+        l2 = 3*wo*wo;
+        l3 = wo*wo*wo;
+        b = 1;
     }
 
 
@@ -168,6 +181,11 @@ double PIDController::compute_action(double target, double feedback, float ff, f
         out = clamp(out, -1., 1.);
     }
 
+    //out = (out - h_disturb)/b;
+    // ADRC
+    
+    extended_state_observer(feedback, out);
+
     //ITUNG PREVIOUS ERROR 
     prev_ril_err[1] = prev_ril_err[0];
     prev_ril_err[0] = ril_err;
@@ -181,7 +199,9 @@ double PIDController::compute_action(double target, double feedback, float ff, f
     if(is_active_) {
         if (target == 0) {
             //out = 0.0;
+            errorIntegral = 0.0;
             return 0.0;
+            
         }
         else return out; //return clamp(out + ff * sign(target) * feed_forward_abs(target), -1., 1.); //FF TUH FEEDFORWARD, -1 SAMA 1 TUH CLAMPING MIN MAX
         }
@@ -271,5 +291,17 @@ double PIDController::feed_forward_abs(double target){
     }
     return matrix[motor_num-1][N-1][1];
 }
+
+double PIDController::extended_state_observer(double feedback, double input){
+    y = feedback;
+    double delta = y - obs_y;
+    z1 += z2 + l1 * delta;
+    z2 += z3 + b * input + l2 * delta;
+    z3 += l3 * delta;
+    obs_y = z1;
+    h_disturb = z3;
+    return z3;
+}
+
 
 

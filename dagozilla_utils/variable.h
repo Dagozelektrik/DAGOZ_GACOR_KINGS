@@ -93,7 +93,7 @@ double locomotion_BL_prev_vel = 0;
 double locomotion_BR_prev_vel = 0;
 
 //extended variable
-unsigned long last_timer;
+double last_timer_sub;
 double last_timer_speed,t_speed;
 double last_timer_pub,t_pub;
 double control_period;

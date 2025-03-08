@@ -15,9 +15,11 @@ public:
     double filter_Kalman(double v1);
     int sign(double val);
     double feed_forward_abs(double target);
+    double extended_state_observer(double feedback, double input);
     float errorIntegral, errorDerivative;
     double err,targett;
     double out;
+    double z1,z2,z3,h_disturb,obs_y;
 
 
 private:
@@ -35,6 +37,12 @@ private:
     float v1Filt, v1Prev;
     float kalmanFilterData;
     float Xt, Xt_update, Xt_prev, Pt, Pt_update, Pt_prev, Kt, R, Q;
+
+    //Extended State Observer - ESO
+    
+    double y, b;
+    double l1,l2,l3;
+
     
     //IIR LPF
     //float b[3]; //Numerator Coefficent
