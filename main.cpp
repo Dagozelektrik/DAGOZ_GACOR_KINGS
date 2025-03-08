@@ -243,8 +243,8 @@ void assignPIDParam()
 
 void mainProcess()
 {
-//    float cur_pot_L0 = (float)dribblerPotL.read() * SCALE_POT_L;
-    float cur_pot_R0 = (float)dribblerPotR.read() * SCALE_POT_R;
+    //cur_pot_L0 = dribblerPotL.read() * SCALE_POT_L;
+    //cur_pot_R0 = dribblerPotR.read() * SCALE_POT_R;
     Thread::wait(1000);
 
     while (1)
@@ -257,15 +257,12 @@ void mainProcess()
             dc = 1;   
         }
 
-//        cur_pot_L = (float)dribblerPotL.read() * SCALE_POT_L - cur_pot_L0;
-        cur_pot_R = (float)dribblerPotR.read() * SCALE_POT_R - cur_pot_R0;
+        //cur_pot_L = dribblerPotL.read() * SCALE_POT_L - cur_pot_L0;
+        //cur_pot_R = dribblerPotR.read() * SCALE_POT_R - cur_pot_R0;
 
         //ball distance from IR
         ball_distance = infraRed.read();
-        // ball_distance = 0.9;
-
-        //cur_dribbler_L = -dribblerEncL.GetCounter(1);
-        //cur_dribbler_R = -dribblerEncR.GetCounter(1);
+ 
 
         moveDribbler();
         moveLever();
@@ -286,6 +283,7 @@ void mainProcess()
             kick_power_target = 0;
             kicker_shoot_mode = 0;
         }
+        
         Thread::wait(20);
         nh.spinOnce();
     }
@@ -307,10 +305,14 @@ void controlCalculation()
         rotInBL = intEncBL.getPulses(1);
         rotInBR = intEncBR.getPulses(1);
         
-        //read encoder
+        //read encoder external
         temp_cur_locomotion_R = locomotionEncR.GetCounter(1);
         temp_cur_locomotion_L = locomotionEncL.GetCounter(1);
         temp_cur_locomotion_B = locomotionEncB.GetCounter(1);
+
+        //Read Dribbler Encoder //PERUBAHAN DRIBBLER
+        temp_cur_dribbler_L = dribblerEncL.GetCounter(1);
+        temp_cur_dribbler_R = dribblerEncR.GetCounter(1);
 
 //        xSemaphorePulseData.wait();
         motorPulseFL += rotInFL;
@@ -318,11 +320,23 @@ void controlCalculation()
         motorPulseBL += rotInBL;
         motorPulseBR += rotInBR; 
         
+        //x and y position
         x_pos += (((-rotInFL * 2 * PI * WHEEL_RADIUS )/ WHEEL_PPR_1) + ((rotInFR * 2 * PI * WHEEL_RADIUS )/ WHEEL_PPR_2) - ((rotInBL * 2 * PI * WHEEL_RADIUS) / WHEEL_PPR_3) +  ((rotInBR * 2 * PI * WHEEL_RADIUS) / WHEEL_PPR_4))*0.353553391;
         y_pos +=  (((rotInFL * 2 * PI * WHEEL_RADIUS) / WHEEL_PPR_1) + ((rotInFR * 2 * PI * WHEEL_RADIUS )/ WHEEL_PPR_2) - ((rotInBL * 2 * PI * WHEEL_RADIUS) / WHEEL_PPR_3) -  ((rotInBR * 2 * PI * WHEEL_RADIUS )/ WHEEL_PPR_4))*0.353553391;
+        
+        x_vel_target = 0.707107*(-locomotion_FL_target_vel - locomotion_BL_target_vel + locomotion_FR_target_vel + locomotion_BR_target_vel);
+        y_vel_target = 0.707107*(locomotion_FL_target_vel - locomotion_BL_target_vel + locomotion_FR_target_vel - locomotion_BR_target_vel)
+        magnitude_vel_target = (x_vel_target**2 + y_vel_target**2)**0.5;
+        
+
+        //pulse external encoder 
         cur_locomotion_L -= temp_cur_locomotion_L;
         cur_locomotion_R -= temp_cur_locomotion_R;
         cur_locomotion_B -= temp_cur_locomotion_B;
+        
+        //pulse dribbler 
+        cur_dribbler_L -= temp_cur_dribbler_L;
+        cur_dribbler_R -= temp_cur_dribbler_R; 
 
 //        xSemaphorePulseData.release();
 

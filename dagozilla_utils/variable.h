@@ -61,12 +61,18 @@ float cur_locomotion_B = 0;
 float temp_cur_locomotion_L = 0;
 float temp_cur_locomotion_R = 0;
 float temp_cur_locomotion_B = 0;
+float temp_cur_dribbler_R = 0;
+float temp_cur_dribbler_L = 0; 
 float cur_dribbler_L = 0;
 float cur_dribbler_R = 0;
 
 //Potentio value
 float cur_pot_L = 0;
 float cur_pot_R = 0;
+float cur_pot_L_initial = 0;
+float cur_pot_R_initial = 0; 
+float dribblerPotL = 0;
+float dribblerPotR = 0;
 
 //pwm value
 double locomotion_FL_target_rate = 0;
@@ -86,6 +92,8 @@ double locomotion_FL_vel = 0;
 double locomotion_FR_vel = 0;
 double locomotion_BL_vel = 0;
 double locomotion_BR_vel = 0;
+
+//velocity target 
 
 //extended variable
 unsigned long last_timer;

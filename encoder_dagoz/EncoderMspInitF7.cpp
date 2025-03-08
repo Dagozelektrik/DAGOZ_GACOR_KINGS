@@ -82,10 +82,10 @@ void HAL_TIM_Encoder_MspInit(TIM_HandleTypeDef *htim)
         HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
     }
     
-    else if (htim->Instance == TIM8) { // PC_6 PC_7
+    else if (htim->Instance == TIM8) { // PC_8 PC_9
         __TIM8_CLK_ENABLE();
         __GPIOC_CLK_ENABLE();
-        GPIO_InitStruct.Pin = GPIO_PIN_6 | GPIO_PIN_7;
+        GPIO_InitStruct.Pin = GPIO_PIN_8 | GPIO_PIN_9;
         GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
         GPIO_InitStruct.Pull = GPIO_NOPULL;
         GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;

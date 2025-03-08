@@ -21,9 +21,10 @@ EncoderMotor intEncBR(PB_7, PC_13, 384, EncoderMotor::X4_ENCODING);
 //EncoderMotor intEncBR(PC_3, PC_13, 384, EncoderMotor::X4_ENCODING);
 
 EncoderDAGOZ locomotionEncL(TIM2);
-//EncoderDAGOZ locomotionEncL(TIM4); //
 EncoderDAGOZ locomotionEncR(TIM1); //Change for error troubleshooting from TIM 1-> TIM 4
 EncoderDAGOZ locomotionEncB(TIM3);
+EncoderDAGOZ dribblerEncR(TIM4); //
+EncoderDAGOZ dribblerEncL(TIM8);
 
 //Motor pin buat Board Sistem next ver.(periode, dirCW, dirCCW, PWM) ->updated for no not gate condition
 MotorDagoz locomotionMotorFL(LOCOMOTION_PWM_PERIOD_US, PF_11, PB_6, PF_7); //Locomotion Front Left Motor PF_7
@@ -45,8 +46,8 @@ Serial pc(USBTX, USBRX, 115200); //Serial debug
 CMPS_DAGOZ compass(PB_9, PB_8, 0xC0);       //Compass I2C Communication SDA SCL
 
 //Potensio Pin
-AnalogIn dribblerPotR(PF_6); //Potensio for Left Dribbler, di board saat ini masih PC_2
-//AnalogIn dribblerPotL(PC_3); //Potensio for Right Dribbler
+AnalogIn dribblerPotR(PC_3); //Potensio for Left Dribbler, di board saat ini masih PC_2
+AnalogIn dribblerPotL(PB_1); //Potensio for Right Dribbler
 AnalogIn infraRed(PF_5);     //Potensio for Kicker, di board saat ini masih PD_4
 
 //LED Pin
